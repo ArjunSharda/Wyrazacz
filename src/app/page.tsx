@@ -1,56 +1,53 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'next-i18next'
-import { ThemeProvider } from "@/providers/theme-provider"
-import { TextEditor } from "@/components/text-editor"
-import { TextComparison } from "@/components/text-comparison"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageSelector } from "@/components/language-selector"
-import { Footer } from "@/components/footer"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+"use client"
 
-export async function getStaticProps({ locale }: { locale: string }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  }
-}
+import {useState} from "react"
+import {ThemeProvider} from "@/providers/theme-provider"
+import {TextEditor} from "@/components/text-editor"
+import {TextComparison} from "@/components/text-comparison"
+import {ThemeToggle} from "@/components/theme-toggle"
+import {Footer} from "@/components/footer"
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 
 export default function Home() {
-  const { t } = useTranslation()
+  const [activeTab, setActiveTab] = useState("editor")
 
   return (
       <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
       >
-        <div className="min-h-screen bg-background">
-          <header className="border-b">
-            <div className="container flex h-16 items-center justify-between">
-              <div className="text-2xl font-bold">{t('title')}</div>
-              <div className="flex items-center gap-4">
-                <LanguageSelector />
-                <ThemeToggle />
+        <div className="flex flex-col min-h-screen bg-background">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <header
+                className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="container flex h-16 items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <h1 className="text-2xl font-bold">Wyrazacz</h1>
+                  <TabsList className="hidden sm:flex">
+                    <TabsTrigger value="editor">Text Editor</TabsTrigger>
+                    <TabsTrigger value="comparison">Text Comparison</TabsTrigger>
+                  </TabsList>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <ThemeToggle/>
+                </div>
               </div>
-            </div>
-          </header>
+            </header>
 
-          <main className="container py-6">
-            <Tabs defaultValue="editor" className="space-y-4">
-              <TabsList>
-                <TabsTrigger value="editor">{t('textEditor')}</TabsTrigger>
-                <TabsTrigger value="comparison">{t('textComparison')}</TabsTrigger>
+            <main className="flex-1 container py-6">
+              <TabsList className="sm:hidden w-full mb-4">
+                <TabsTrigger value="editor" className="flex-1">Text Editor</TabsTrigger>
+                <TabsTrigger value="comparison" className="flex-1">Text Comparison</TabsTrigger>
               </TabsList>
-              <TabsContent value="editor">
+              <TabsContent value="editor" className="mt-0">
                 <TextEditor />
               </TabsContent>
-              <TabsContent value="comparison">
+              <TabsContent value="comparison" className="mt-0">
                 <TextComparison />
               </TabsContent>
-            </Tabs>
-          </main>
+            </main>
+          </Tabs>
 
           <Footer />
         </div>
